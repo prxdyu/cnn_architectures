@@ -36,80 +36,10 @@ import torchvision.transforms as transforms
 import torchvision
 import os
 
-# Implementing LeNet architecture
-class LeNet(nn.Module):
-    def __init__(self):
-        super(LeNet, self).__init__()
-        self.relu = F.relu
-        self.pool = nn.AvgPool2d(kernel_size=(2, 2))
-        self.conv1 = nn.Conv2d(in_channels=1, out_channels=6, kernel_size=(5, 5), stride=1, padding=0)
-        self.conv2 = nn.Conv2d(in_channels=6, out_channels=16, kernel_size=(5, 5), stride=1, padding=0)
-        self.conv3 = nn.Conv2d(in_channels=16, out_channels=120, kernel_size=(5, 5), stride=1, padding=0)
-        self.linear1 = nn.Linear(120, 84)
-        self.linear2 = nn.Linear(84, 10)
+# importing custom made LeNet
+from LeNet import LeNet
 
-    def forward(self, x):
-        x = self.relu(self.conv1(x))
-        x = self.pool(x)
-        x = self.relu(self.conv2(x))
-        x = self.pool(x)
-        x = self.relu(self.conv3(x))
-        x = x.reshape(x.shape[0], -1)
-        x = self.relu(self.linear1(x))
-        x = self.linear2(x)
-        return x
-
-    def evaluate(self, loader):
-        num_samples = 0
-        num_correct = 0
-        self.eval()
-        with torch.no_grad():
-            for x, y_true in loader:
-                x = x.to(device='cpu')
-                y_true = y_true.to(device='cpu')
-                logits = self(x)
-                _, y_pred = logits.max(dim=1)
-                num_correct += (y_pred == y_true).sum()
-                num_samples += y_pred.size(0)
-            accuracy = float(num_correct) / float(num_samples)
-        return accuracy
-
-# Example of using the LeNet model
-
-# Define a transform to preprocess the images
-transform = transforms.Compose([
-    transforms.Resize((32, 32)),
-    transforms.ToTensor(),
-])
-
-# Load your dataset
-train_dataset = datasets.MNIST(root='./data', train=True, download=True, transform=transform)
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
 
 # Instantiate the LeNet model
 model = LeNet()
-
-# Define loss function and optimizer
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-
-# Training loop
-for epoch in range(10):  # number of epochs
-    for images, labels in train_loader:
-        optimizer.zero_grad()
-        outputs = model(images)
-        loss = criterion(outputs, labels)
-        loss.backward()
-        optimizer.step()
-    print(f'Epoch [{epoch+1}/10], Loss: {loss.item():.4f}')
-
-# Save the trained model
-torch.save(model.state_dict(), 'lenet.pth')
-
-# To evaluate the model, load it and run inference on your test dataset
-test_dataset = datasets.MNIST(root='./data', train=False, download=True, transform=transform)
-test_loader = DataLoader(test_dataset, batch_size=32, shuffle=False)
-
-# Evaluate the model
-accuracy = model.evaluate(test_loader)
-print(f'Test Accuracy: {accuracy * 100:.2f}%')
+......
