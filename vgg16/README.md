@@ -41,38 +41,4 @@ num_classes = 1000
 # Instantiate the VGG16 model
 model = VGG16(in_channels=in_channels, num_classes=num_classes)
 
-# Define a transform to preprocess the images
-transform = transforms.Compose([
-    transforms.Resize((224, 224)),
-    transforms.ToTensor(),
-])
-
-# Load your dataset
-train_dataset = torchvision.datasets.CIFAR10(root='./data', train=True, download=True, transform=transform)
-train_loader = DataLoader(train_dataset, batch_size=32, shuffle=True)
-
-# Define loss function and optimizer
-criterion = nn.CrossEntropyLoss()
-optimizer = optim.Adam(model.parameters(), lr=0.001)
-
-# Training loop
-for epoch in range(10):  # number of epochs
-    for images, labels in train_loader:
-        # Zero the parameter gradients
-        optimizer.zero_grad()
-
-        # Forward pass
-        outputs = model(images)
-        loss = criterion(outputs, labels)
-
-        # Backward pass and optimization
-        loss.backward()
-        optimizer.step()
-
-    print(f'Epoch [{epoch+1}/10], Loss: {loss.item():.4f}')
-
-# Save the trained model
-torch.save(model.state_dict(), 'vgg16.pth')
-
-# To evaluate the model, load it and run inference on your test dataset
-# Add your evaluation code here...
+# Add your training code here...
